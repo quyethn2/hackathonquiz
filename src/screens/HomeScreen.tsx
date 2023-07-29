@@ -1,14 +1,11 @@
 import {
   Text,
-  FlatList,
   View,
   Image,
   Pressable,
-  ScrollView,
   StyleSheet,
   StatusBar,
 } from "react-native";
-import tw from "twrnc";
 
 import { Screen } from "../components/Screen";
 import { useNavigation } from "@react-navigation/native";
@@ -16,17 +13,6 @@ import { LinearGradient } from "expo-linear-gradient";
 
 export function HomeScreen() {
   const navigation = useNavigation<any>();
-  const features = [
-    "tailwind",
-    "recoil",
-    "native styling",
-    "fetching code from an API",
-    "using a FlatList to render data",
-    "Image for both remote & local images",
-    "custom fonts",
-    "sign a transaction / message",
-    "theme hook with light/dark support",
-  ];
 
   return (
     <Screen>

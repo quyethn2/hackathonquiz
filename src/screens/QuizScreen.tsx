@@ -1,20 +1,35 @@
-import { StyleSheet, Text, SafeAreaView, View, Pressable } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  SafeAreaView,
+  View,
+  Pressable,
+  Image,
+} from "react-native";
 import React, { useState, useEffect } from "react";
-import questions from "../data/questions";
+// import questions from "../data/questions";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Screen } from "../components/Screen";
+import { useCreateQuestion } from "../hooks/useGPT";
+import { Questions } from "../types";
+
 const QuizScreen = () => {
   const navigation = useNavigation<any>();
-  const data = questions;
-  const totalQuestions = data.length;
+
+  const { responseListQuestion } = useCreateQuestion();
+
+  const listQuestion: Questions[] = responseListQuestion;
+  const totalQuestions = listQuestion.length;
+
+  // index of the question
+  const [indexQuestion, setIndexQuestion] = useState(0);
+
+  const currentQuestion: Questions = listQuestion[indexQuestion];
 
   // points
   const [points, setPoints] = useState(0);
-
-  // index of the question
-  const [index, setIndex] = useState(0);
 
   // answer Status (true or false)
   const [answerStatus, setAnswerStatus] = useState<any>(null);
@@ -23,7 +38,7 @@ const QuizScreen = () => {
   const [answers, setAnswers] = useState<any>([]);
 
   // selected answer
-  const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
 
   // Counter
   const counterSecond = 30;
@@ -33,33 +48,45 @@ const QuizScreen = () => {
   let interval: any = null;
 
   // progress bar
-  const progressPercentage = Math.floor((index / totalQuestions) * 100);
+  const progressPercentage = Math.floor((indexQuestion / totalQuestions) * 100);
+
+  const converAnswerOptionToName = (answerOption: string) => {
+    return currentQuestion.answers[answerOption];
+  };
+  const converAnswerOptionToABCD = (answerOption: string) => {
+    const answerName: any = { a: "A", b: "B", c: "C", d: "D" };
+    return answerName[answerOption.toString()];
+  };
 
   useEffect(() => {
-    if (selectedAnswerIndex !== null) {
-      if (selectedAnswerIndex === currentQuestion?.correctAnswerIndex) {
+    if (selectedAnswer !== null) {
+      if (selectedAnswer === currentQuestion?.correct_answer) {
         setPoints((points) => points + 10);
         setAnswerStatus(true);
-        answers.push({ question: index + 1, answer: true });
+        answers.push({ question: indexQuestion + 1, answer: true });
       } else {
         setAnswerStatus(false);
-        answers.push({ question: index + 1, answer: false });
+        answers.push({ question: indexQuestion + 1, answer: false });
       }
     }
-  }, [selectedAnswerIndex]);
+  }, [selectedAnswer]);
 
   useEffect(() => {
-    setSelectedAnswerIndex(null);
+    setSelectedAnswer(null);
     setAnswerStatus(null);
-  }, [index]);
+  }, [indexQuestion]);
 
   useEffect(() => {
+    debugger;
+    if (!currentQuestion) {
+      return;
+    }
     const myInterval = () => {
       if (counter >= 1) {
         setCounter((state) => state - 1);
       }
       if (counter === 0) {
-        onPressNextQuestion()
+        onPressNextQuestion();
         setCounter(counterSecond);
       }
     };
@@ -70,31 +97,158 @@ const QuizScreen = () => {
     return () => {
       clearTimeout(interval);
     };
-  }, [counter]);
+  }, [counter, currentQuestion]);
 
   useEffect(() => {
-    if (index + 1 > data.length) {
+    if (indexQuestion + 1 > listQuestion.length) {
       clearTimeout(interval);
     }
-  }, [index]);
+  }, [indexQuestion]);
 
   useEffect(() => {
     if (!interval) {
       setCounter(counterSecond);
     }
-  }, [index]);
-
-  const currentQuestion = data[index];
+  }, [indexQuestion]);
 
   const onPressNextQuestion = () => {
-    if (index + 1 >= questions.length) {
+    if (indexQuestion + 1 >= totalQuestions) {
       navigation.navigate("Results", {
         points: points,
         answers: answers,
       });
     } else {
-      setIndex(index + 1);
+      setIndexQuestion((indexQuestion) => indexQuestion + 1);
+      setCounter(counterSecond);
     }
+  };
+
+  if (
+    !responseListQuestion ||
+    !responseListQuestion.length ||
+    !currentQuestion
+  ) {
+    return (
+      <Screen>
+        <SafeAreaView>
+          <LinearGradient
+            // Button Linear Gradient
+            style={{ minHeight: "96vh", padding: "20px", paddingTop: "30px" }}
+            colors={["#1488cc", "#2b32b2"]}
+          >
+            <View style={{ alignItems: "center" }}>
+              <Image
+                source={require("../../assets/rockman_run.gif")}
+                alt=""
+                style={{
+                  height: 200,
+                  width: "100%",
+                  marginTop: 15,
+                  resizeMode: "contain",
+                }}
+              ></Image>
+              <Text style={{ color: "#fff" }}>Loading...</Text>
+            </View>
+          </LinearGradient>
+        </SafeAreaView>
+      </Screen>
+    );
+  }
+
+  const renderTemplateOptions = (
+    answerOption: string // a,b,c,d
+  ) => {
+    return (
+      <Pressable
+        onPress={() =>
+          selectedAnswer === null && setSelectedAnswer(answerOption)
+        }
+        style={
+          // choose false auto show answer true
+          {
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor:
+              selectedAnswer != null &&
+              selectedAnswer != answerOption &&
+              answerOption === currentQuestion?.correct_answer
+                ? "#73d13d"
+                : selectedAnswer != null &&
+                  selectedAnswer == answerOption &&
+                  selectedAnswer != currentQuestion?.correct_answer
+                ? "#ff4d4f"
+                : selectedAnswer != null &&
+                  selectedAnswer == answerOption &&
+                  selectedAnswer == currentQuestion?.correct_answer
+                ? "#73d13d"
+                : "#ffffff",
+            padding: 3,
+            marginBottom: 15,
+            borderRadius: 10,
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+
+            elevation: 5,
+          }
+        }
+      >
+        {selectedAnswer != null &&
+        selectedAnswer == answerOption &&
+        selectedAnswer == currentQuestion?.correct_answer ? (
+          <AntDesign
+            style={{
+              textAlign: "center",
+              padding: 10,
+            }}
+            name="check"
+            size={20}
+            color="white"
+          />
+        ) : selectedAnswer != null &&
+          selectedAnswer == answerOption &&
+          selectedAnswer != currentQuestion?.correct_answer ? (
+          <AntDesign
+            style={{
+              textAlign: "center",
+              padding: 10,
+            }}
+            name="closecircle"
+            size={20}
+            color="white"
+          />
+        ) : (
+          <Text
+            style={{
+              textAlign: "center",
+              width: 40,
+              height: 40,
+              fontWeight: "bold",
+              fontSize: 14,
+              padding: 10,
+              color: "#0072ff",
+            }}
+          >
+            {converAnswerOptionToABCD(answerOption)}
+          </Text>
+        )}
+
+        <Text
+          style={{
+            marginLeft: 10,
+            color: "#333",
+            fontWeight: "bold",
+            fontSize: 14,
+          }}
+        >
+          {converAnswerOptionToName(answerOption)}
+        </Text>
+      </Pressable>
+    );
   };
 
   return (
@@ -143,7 +297,7 @@ const QuizScreen = () => {
           >
             <Text style={{ color: "#fff" }}>Your Progress</Text>
             <Text style={{ color: "#fff" }}>
-              ({index}/{totalQuestions}) questions
+              ({indexQuestion + 1}/{totalQuestions}) questions
             </Text>
           </View>
 
@@ -190,8 +344,8 @@ const QuizScreen = () => {
             >
               {currentQuestion?.question}
             </Text>
-            <View style={{ marginTop: 12 }}>
-              {currentQuestion?.options.map((item: any, index: any) => (
+            {/* <View style={{ marginTop: 12 }}>
+              {currentQuestion?.map((itemOption: any, index: any) => (
                 <Pressable
                   key={index}
                   onPress={() =>
@@ -200,7 +354,7 @@ const QuizScreen = () => {
                   }
                   style={
                     selectedAnswerIndex === index &&
-                    index === currentQuestion.correctAnswerIndex
+                    index === converAnswerToIndex(currentQuestion?.correct_answer)
                       ? {
                           flexDirection: "row",
                           alignItems: "center",
@@ -239,7 +393,7 @@ const QuizScreen = () => {
                           elevation: 5,
                         }
                       : selectedAnswerIndex != null &&
-                        index === currentQuestion.correctAnswerIndex
+                        index === converAnswerToIndex(currentQuestion?.correct_answer)
                       ? {
                           flexDirection: "row",
                           alignItems: "center",
@@ -275,7 +429,7 @@ const QuizScreen = () => {
                   }
                 >
                   {selectedAnswerIndex === index &&
-                  index === currentQuestion.correctAnswerIndex ? (
+                  index === converAnswerToIndex(currentQuestion?.correct_answer) ? (
                     <AntDesign
                       style={{
                         textAlign: "center",
@@ -308,7 +462,7 @@ const QuizScreen = () => {
                         color: "#0072ff",
                       }}
                     >
-                      {item.options}
+                      {item.option}
                     </Text>
                   )}
 
@@ -324,33 +478,42 @@ const QuizScreen = () => {
                   </Text>
                 </Pressable>
               ))}
+            </View> */}
+
+            <View style={{ marginTop: 12 }}>
+              {["a", "b", "c", "d"].map((itemOption, indexOption) => (
+                <View key={indexOption}>
+                  {renderTemplateOptions(itemOption)}
+                </View>
+              ))}
+              {/* <View>{renderTemplateOptions(currentQuestion, "a")}</View>
+              <View>
+                {renderTemplateOptions(
+                  currentQuestion,
+                  currentQuestion.answers.b
+                )}
+              </View>
+              <View>
+                {renderTemplateOptions(
+                  currentQuestion,
+                  currentQuestion.answers.c
+                )}
+              </View>
+              <View>
+                {renderTemplateOptions(
+                  currentQuestion,
+                  currentQuestion.answers.d
+                )}
+              </View> */}
             </View>
           </View>
 
+          {/* button */}
           <View
-            style={
-              answerStatus === null
-                ? null
-                : {
-                    borderRadius: 7,
-                  }
-            }
+            style={{
+              borderRadius: 7,
+            }}
           >
-            {answerStatus === null ? null : (
-              <Text
-                style={
-                  answerStatus == null
-                    ? null
-                    : {
-                        fontSize: 17,
-                        color: "#ffffff",
-                        textAlign: "center",
-                        fontWeight: "bold",
-                      }
-                }
-              ></Text>
-            )}
-
             {answerStatus === null ? null : (
               <LinearGradient
                 // Background Linear Gradient
@@ -385,7 +548,9 @@ const QuizScreen = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    {index + 1 >= questions.length ? "Done" : "Next Question"}
+                    {indexQuestion + 1 >= totalQuestions
+                      ? "Done"
+                      : "Next Question"}
                   </Text>
                 </Pressable>
               </LinearGradient>

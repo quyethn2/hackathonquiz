@@ -5,8 +5,6 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useFonts, Inter_900Black } from "@expo-google-fonts/dev";
 import StackNavigator from "./screens/StackNavigator";
 
-const Tab = createBottomTabNavigator();
-
 function App() {
   let [fontsLoaded] = useFonts({
     Inter_900Black,

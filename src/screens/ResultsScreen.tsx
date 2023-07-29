@@ -24,7 +24,7 @@ const ResultsScreen = () => {
       <Confetti recycle={false} tweenDuration={6000}></Confetti>
       <LinearGradient
         // Button Linear Gradient
-        style={{ height: "100vh", padding: 10 }}
+        style={{ minHeight: "100vh", maxHeight: "100vh", padding: 10 }}
         colors={["#1488cc", "#2b32b2"]}
       >
         <View>
@@ -43,8 +43,8 @@ const ResultsScreen = () => {
         <Pressable
           style={{
             backgroundColor: "white",
-            minHeight: "70vh",
-            maxHeight: "70vh",
+            minHeight: "60vh",
+            maxHeight: "60vh",
             borderRadius: 7,
             marginTop: 20,
           }}
@@ -58,7 +58,7 @@ const ResultsScreen = () => {
               marginTop: 8,
             }}
           >
-            Correct answers {correctAnswer}/5
+            Correct answers {correctAnswer}/4
           </Text>
           <FlatList
             numColumns={2}

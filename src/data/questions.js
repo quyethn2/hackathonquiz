@@ -1,6 +1,32 @@
 
 export default [
     {
+        question: "Where is the capital of Vietnam?",
+        options:[
+            {
+                id:"0",
+                options:"A",
+                answer:"Ha Noi",
+            },
+            {
+                id:"1",
+                options:"B",
+                answer:"Ho Chi Minh",
+            },
+            {
+                id:"2",
+                options:"C",
+                answer:"Da Nang",
+            },
+            {
+                id:"3",
+                options:"D",
+                answer:"Quang Ninh",
+            },
+        ],
+        correctAnswerIndex: 0
+    },
+    {
         question: "In what contintent is Indonesia?",
         options:[
             {

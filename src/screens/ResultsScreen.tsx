@@ -5,11 +5,14 @@ import {
   View,
   Pressable,
   FlatList,
+  Image,
 } from "react-native";
 import React from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import Confetti from "react-confetti";
+
 const ResultsScreen = () => {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
@@ -18,47 +21,23 @@ const ResultsScreen = () => {
   ).length;
   return (
     <SafeAreaView style={{ margin: 10 }}>
+      <Confetti recycle={false} tweenDuration={6000}></Confetti>
       <LinearGradient
         // Button Linear Gradient
         style={{ height: "100vh", padding: 10 }}
         colors={["#1488cc", "#2b32b2"]}
       >
-        {/* <View
-                style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginTop: 30
-                }}
-            >
-                <Text style={{color: '#ffffff'}}>Your Results</Text>
-                <View
-                style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginRight: 14,
-                }}
-                >
-                    <Text style={{color: '#ffffff', marginRight: 8}}>Share</Text>
-                    <AntDesign
-                        name="sharealt"
-                        size={18}
-                        color="white"
-                    />
-                </View>
-            </View> */}
-
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginVertical: 10,
-            paddingTop: 30,
-          }}
-        >
-          <Text style={{ color: "#ffffff" }}>Correct answers</Text>
-          <Text style={{ color: "#ffffff" }}>({correctAnswer}/5)</Text>
+        <View>
+          <Image
+            source={require("../../assets/cup.png")}
+            alt=""
+            style={{
+              height: 100,
+              width: "100%",
+              marginTop: 15,
+              resizeMode: "contain",
+            }}
+          ></Image>
         </View>
 
         <Pressable
@@ -79,7 +58,7 @@ const ResultsScreen = () => {
               marginTop: 8,
             }}
           >
-            Score Card
+            Correct answers {correctAnswer}/5
           </Text>
           <FlatList
             numColumns={2}

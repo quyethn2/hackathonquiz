@@ -39,12 +39,12 @@ export function HomeScreen() {
               padding: 10,
             }}
           >
-            <Text style={{ color: "white" }}>
-              <View style={{ marginTop: 20 }}>
+            <View style={{ marginTop: 20 }}>
+              <Text style={{ color: "white" }}>
                 Do you feel confident? Here you'll challenge one of our most
                 difficult questions!
-              </View>
-            </Text>
+              </Text>
+            </View>
           </View>
         </View>
         <View>

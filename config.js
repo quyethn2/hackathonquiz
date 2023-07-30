@@ -1,4 +1,4 @@
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = "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";
 const OPENAI_BASE_PATH = "https://api.openai.com/v1/chat";
 const OPENAI_MODE = "gpt-3.5-turbo"
 

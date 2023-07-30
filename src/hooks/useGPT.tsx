@@ -8,7 +8,7 @@ import {
 import { useEffect, useState } from "react";
 import { Questions } from "../types";
 
-export function useCreateQuestion() {
+export function useCreateQuestion(topic: string, numberOfQuestion: number) {
   const configuration = new Configuration({
     apiKey: OPENAI_API_KEY,
     basePath: OPENAI_BASE_PATH,
@@ -29,8 +29,8 @@ export function useCreateQuestion() {
       setListQuestion(dataJsonListQuestion);
     } catch (error) {
       alert("Error convert data OpenAI");
+      sendQuestion()
     }
-    
   };
 
   const sendQuestion = () => {
@@ -41,7 +41,7 @@ export function useCreateQuestion() {
           messages: [
             {
               role: "system",
-              content: questionDefault(null, null),
+              content: questionDefault(topic, numberOfQuestion),
             },
             {
               role: "user",

@@ -16,15 +16,23 @@ import Confetti from "react-confetti";
 const ResultsScreen = () => {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
+
+  const numberOfQuestion = route.params.numberOfQuestion;
+
   const correctAnswer = route.params.answers.filter(
     (answer: any) => answer.answer === true
   ).length;
+
   return (
     <SafeAreaView style={{ margin: 10 }}>
-      <Confetti recycle={false} tweenDuration={6000}></Confetti>
+      <Confetti recycle={false} tweenDuration={3000}></Confetti>
       <LinearGradient
         // Button Linear Gradient
-        style={{ minHeight: "100vh", maxHeight: "100vh", padding: 10 }}
+        style={{
+          minHeight: "calc(100vh - 20px)",
+          maxHeight: "calc(100vh - 20px)",
+          padding: 10,
+        }}
         colors={["#1488cc", "#2b32b2"]}
       >
         <View>
@@ -58,7 +66,7 @@ const ResultsScreen = () => {
               marginTop: 8,
             }}
           >
-            Correct answers {correctAnswer}/4
+            Correct answers {correctAnswer}/ {numberOfQuestion || 4}
           </Text>
           <FlatList
             numColumns={2}

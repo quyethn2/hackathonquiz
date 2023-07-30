@@ -53,4 +53,5 @@ export type Questions = {
   answers: Answers | any;
   correct_answer: string;
   question: string;
+  description: string;
 };

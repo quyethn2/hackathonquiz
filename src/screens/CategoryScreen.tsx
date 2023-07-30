@@ -5,16 +5,30 @@ import {
   Pressable,
   StyleSheet,
   StatusBar,
+  TextInput,
 } from "react-native";
 
 import { Screen } from "../components/Screen";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Tooltip } from "react-native-elements";
+import { Input } from "react-native-elements";
+import React from "react";
 
-export function HomeScreen() {
+export function CategoryScreen() {
   const navigation = useNavigation<any>();
 
+  const [topic, onChangeTopic] = React.useState("");
+  const [numberOfQuestion, onChangeNumberOfQuestion] = React.useState<number>();
+
+  const gotoQuiz = () => {
+    if (numberOfQuestion && isNaN(numberOfQuestion as number)) {
+      return;
+    }
+    navigation.navigate("Quiz", {
+      topic: topic,
+      numberOfQuestion: numberOfQuestion,
+    });
+  };
   return (
     <Screen>
       <LinearGradient
@@ -22,34 +36,46 @@ export function HomeScreen() {
         style={{ minHeight: "96vh", padding: "20px", paddingTop: "50px" }}
         colors={["#1488cc", "#2b32b2"]}
       >
-        <View>
-          <Image
-            source={require("../../assets/3D-Man.png")}
-            style={{
-              height: 200,
-              width: "100%",
-              marginTop: 15,
-              resizeMode: "contain",
-            }}
-          />
-        </View>
+        <View></View>
         <View>
           <View
             style={{
               padding: 10,
             }}
           >
-            <Text style={{ color: "white" }}>
-              <View style={{ marginTop: 20 }}>
-                Do you feel confident? Here you'll challenge one of our most
-                difficult questions!
-              </View>
+            <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>
+              Please choose your favorite topic!
             </Text>
+          </View>
+
+          <View>
+            <Text style={{ color: "#fff", fontSize: 14, marginLeft: 12 }}>
+              Topic:
+            </Text>
+            <TextInput
+              placeholder="Ex: VietNam"
+              style={styles.input}
+              onChangeText={onChangeTopic}
+              value={topic}
+            />
+          </View>
+
+          <View>
+            <Text style={{ color: "#fff", fontSize: 14, marginLeft: 12 }}>
+              Number of question:
+            </Text>
+            <TextInput
+              placeholder="Ex: 4"
+              style={styles.input}
+              onChangeText={onChangeNumberOfQuestion}
+              value={numberOfQuestion}
+              keyboardType="numeric"
+            />
           </View>
         </View>
         <View>
           <Pressable
-            onPress={() => navigation.navigate("Category")}
+            onPress={gotoQuiz}
             style={{
               backgroundColor: "#ffffff",
               padding: 14,
@@ -74,7 +100,7 @@ export function HomeScreen() {
                 textAlign: "center",
               }}
             >
-              Start Quiz
+              Ready
             </Text>
           </Pressable>
         </View>
@@ -92,5 +118,14 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 42,
+  },
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    borderColor: "#ddd",
+    color: "#ddd",
+    borderRadius: 6,
   },
 });
